@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bloch Sphere &amp; Mixed States Virtual Lab | Dr. V. Sesha Sai Kumar, GRIET, Hyderabad (November 2026)</title>
+<style>
+  #griet-bloch-v4, #griet-bloch-v4 * {
+    box-sizing: border-box;
+    word-break: normal;
+    overflow-wrap: normal;
+  }
+
+  #griet-bloch-v4 {
+    --bg: #eef2f7;
+    --panel: #ffffff;
+    --ink: #0f172a;
+    --ink-soft: #334155;
+    --muted: #64748b;
+    --accent: #1d4ed8;
+    --accent-dark: #1e3a8a;
+    --accent-soft: #eff6ff;
+    --accent-border: #bfdbfe;
+    --teal: #0f766e;
+    --teal-soft: #f0fdfa;
+    --violet: #6d28d9;
+    --violet-soft: #f5f3ff;
+    --amber: #b45309;
+    --amber-soft: #fffbeb;
+    --rose: #be123c;
+    --line: #cbd5e1;
+    --shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.08);
+    background: var(--bg);
+    color: var(--ink);
+    font: 14.5px/1.65 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 1px solid #cbd5e1;
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  #griet-bloch-v4 .header {
+    background: linear-gradient(135deg, #090d16 0%, #172554 48%, #312e81 82%, #1d4ed8 100%);
+    color: #ffffff;
+    padding: 20px 26px;
+    border-bottom: 3px solid #38bdf8;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+
+  #griet-bloch-v4 .header h1 {
+    margin: 0;
+    font-size: clamp(20px, 2.8vw, 29px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #ffffff;
+  }
+
+  #griet-bloch-v4 .header p {
+    margin: 4px 0 0;
+    color: #cbd5e1;
+    font-size: 13.5px;
+    font-weight: 500;
+  }
+
+  #griet-bloch-v4 .author-badge {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(186, 230, 253, 0.35);
+    border-radius: 10px;
+    padding: 9px 15px;
+    text-align: right;
+  }
+  #griet-bloch-v4 .author-name { font-weight: 700; font-size: 15px; color: #ffffff; display: block; }
+  #griet-bloch-v4 .author-inst { font-size: 12.5px; color: #7dd3fc; font-weight: 600; display: block; }
+  #griet-bloch-v4 .author-date {
+    display: inline-block; margin-top: 4px; background: rgba(56, 189, 248, 0.25);
+    border: 1px solid rgba(125, 211, 252, 0.45); color: #e0f2fe; font-size: 11px;
+    font-weight: 700; padding: 1px 9px; border-radius: 999px;
+  }
+
+  #griet-bloch-v4 .main-grid {
+    width: 100%;
+    padding: 8px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+  #griet-bloch-v4 .panel { min-width: 0; padding: 12px; }
+  #griet-bloch-v4 .bottom-wrap { padding: 0 8px 10px; }
+  @media (max-width: 960px) {
+    #griet-bloch-v4 .main-grid { grid-template-columns: minmax(0, 1fr); }
+  }
+
+  #griet-bloch-v4 .panel {
+    background: var(--panel);
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: var(--shadow);
+  }
+
+  #griet-bloch-v4 h2 { margin: 0 0 8px; font-size: 18px; font-weight: 800; color: var(--accent-dark); }
+  #griet-bloch-v4 h3 { margin: 0 0 10px; font-size: 15px; font-weight: 700; color: #4338ca; }
+
+  #griet-bloch-v4 canvas#bloch3d {
+    display: block;
+    width: 100%;
+    height: 440px;
+    border: 1px solid #cbd5e1;
+    border-radius: 11px;
+    background: #ffffff;
+    cursor: grab;
+  }
+  #griet-bloch-v4 canvas#bloch3d:active { cursor: grabbing; }
+
+  /* Unbreakable Typeset Dirac & Matrix Equations */
+  #griet-bloch-v4 .eq-box {
+    background: linear-gradient(135deg, #f8fafc 0%, #eff6ff 55%, #f5f3ff 100%);
+    border: 1px solid #dbeafe;
+    border-left: 4px solid var(--violet);
+    padding: 10px 14px;
+    border-radius: 9px;
+    margin: 8px 0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 12px 20px;
+    overflow-x: auto;
+  }
+
+  #griet-bloch-v4 .qeq {
+    font-family: 'Cambria Math', 'STIX Two Math', Georgia, serif;
+    font-size: 16.5px;
+    color: #0f172a;
+    display: inline-block;
+    white-space: nowrap;
+    line-height: 1.45;
+  }
+  #griet-bloch-v4 .qeq var { font-style: italic; color: #1e3a8a; font-weight: 600; }
+  #griet-bloch-v4 .qeq .fn { font-style: normal; color: #0f766e; font-weight: 700; }
+  #griet-bloch-v4 .qeq .ket { font-style: normal; color: #6d28d9; font-weight: 700; }
+  #griet-bloch-v4 .qeq .op { color: #475569; padding: 0 2px; }
+
+  #griet-bloch-v4 .frac {
+    display: inline-table; vertical-align: middle; text-align: center;
+    margin: 0 2px; font-size: 0.86em; line-height: 1.12; border-collapse: collapse;
+  }
+  #griet-bloch-v4 .frac > span:first-child { display: table-row; border-bottom: 1.5px solid #1e3a8a; padding: 0 3px 1px; }
+  #griet-bloch-v4 .frac > span:last-child { display: table-row; padding: 1px 3px 0; }
+
+  #griet-bloch-v4 .qmat {
+    display: inline-table;
+    vertical-align: middle;
+    border-left: 2px solid #1e3a8a;
+    border-right: 2px solid #1e3a8a;
+    border-radius: 4px;
+    padding: 1px 6px;
+    margin: 0 3px;
+    font-size: 0.88em;
+    line-height: 1.3;
+  }
+  #griet-bloch-v4 .qmat span { display: table-row; text-align: center; white-space: nowrap; }
+
+
+  /* Live animation equations and numerical data */
+  #griet-bloch-v4 .animation-readout {
+    margin-top: 12px;
+    padding: 12px;
+    border: 1px solid #c7d2fe;
+    border-left: 4px solid #6d28d9;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #f8fafc, #eef2ff);
+    color: #0f172a;
+  }
+  #griet-bloch-v4 .animation-readout h3 {
+    margin: 0 0 8px;
+    color: #3730a3;
+  }
+  #griet-bloch-v4 .animation-readout-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+  #griet-bloch-v4 .animation-readout-card {
+    min-width: 0;
+    padding: 9px 10px;
+    background: #fff;
+    border: 1px solid #dbeafe;
+    border-radius: 8px;
+  }
+  #griet-bloch-v4 .animation-readout-card .readout-label {
+    display: block;
+    margin-bottom: 4px;
+    color: #475569;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+  #griet-bloch-v4 .animation-equation {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    padding: 3px 0;
+    color: #111827;
+    font: 600 14px/1.65 "Cambria Math", "STIX Two Math", Georgia, serif;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  #griet-bloch-v4 .animation-data {
+    color: #1e3a8a;
+    font: 700 13px/1.7 ui-monospace, SFMono-Regular, Consolas, monospace;
+    overflow-wrap: anywhere;
+  }
+  #griet-bloch-v4 .animation-status {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 9px;
+    color: #334155;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  #griet-bloch-v4 .animation-progress {
+    width: 100%;
+    height: 7px;
+    margin-top: 6px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #e2e8f0;
+  }
+  #griet-bloch-v4 .animation-progress > span {
+    display: block;
+    width: 0%;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #7c3aed, #2563eb);
+    transition: width .08s linear;
+  }
+  #griet-bloch-v4 .eq-box,
+  #griet-bloch-v4 #liveDirac,
+  #griet-bloch-v4 .qeq {
+    min-width: 0;
+    max-width: 100%;
+  }
+  #griet-bloch-v4 .eq-box {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  #griet-bloch-v4 .qeq {
+    flex: 0 1 auto;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+  @media (max-width: 620px) {
+    #griet-bloch-v4 .animation-readout-grid { grid-template-columns: 1fr; }
+    #griet-bloch-v4 canvas#bloch3d { height: 360px; }
+  }
+
+  /* Controls & Buttons */
+  #griet-bloch-v4 .control { margin: 10px 0; }
+  #griet-bloch-v4 .control label {
+    display: flex; justify-content: space-between; align-items: center;
+    font-weight: 600; font-size: 13.5px; color: var(--ink-soft); margin-bottom: 3px;
+  }
+  #griet-bloch-v4 .val-badge {
+    background: var(--accent-soft); border: 1px solid var(--accent-border);
+    padding: 2px 8px; border-radius: 6px; font-family: ui-monospace, monospace;
+    font-size: 12.5px; font-weight: 700; color: var(--accent-dark);
+  }
+  #griet-bloch-v4 input[type="range"] { width: 100%; accent-color: var(--violet); cursor: pointer; height: 6px; }
+
+  #griet-bloch-v4 .btn-grid {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px;
+  }
+  #griet-bloch-v4 button.chip {
+    padding: 5px 10px; border-radius: 7px; font-size: 12px; font-weight: 700;
+    cursor: pointer; border: 1px solid #cbd5e1; background: #f8fafc; color: #1e293b;
+    transition: all 0.12s;
+  }
+  #griet-bloch-v4 button.chip:hover { background: var(--accent-soft); border-color: var(--accent-border); color: var(--accent-dark); }
+  #griet-bloch-v4 button.mixed-btn {
+    background: var(--amber-soft); color: var(--amber); border-color: #fde68a;
+  }
+  #griet-bloch-v4 button.mixed-btn:hover { background: var(--amber); color: #ffffff; }
+  #griet-bloch-v4 button.gate-btn {
+    background: var(--violet-soft); color: var(--violet); border-color: #ddd6fe; font-family: ui-monospace, monospace;
+  }
+  #griet-bloch-v4 button.gate-btn:hover { background: var(--violet); color: #ffffff; }
+  #griet-bloch-v4 button.primary {
+    background: linear-gradient(135deg, var(--violet), var(--accent-dark));
+    color: #ffffff; border: 0; padding: 8px 14px; border-radius: 8px; font-weight: 600; cursor: pointer;
+  }
+  #griet-bloch-v4 button.decohere-btn {
+    background: linear-gradient(135deg, #d97706, #b45309);
+    color: #ffffff; border: 0; padding: 8px 14px; border-radius: 8px; font-weight: 600; cursor: pointer;
+  }
+
+  /* Live Density Matrix Panel */
+  #griet-bloch-v4 .rho-card {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 9px;
+    padding: 10px 12px;
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  /* Metrics Cards */
+  #griet-bloch-v4 .metrics {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 10px 0;
+  }
+  @media (max-width: 520px) { #griet-bloch-v4 .metrics { grid-template-columns: 1fr; } }
+  #griet-bloch-v4 .metric {
+    background: #f8fafc; border: 1px solid #dbeafe; border-top: 3px solid var(--violet);
+    padding: 9px; border-radius: 8px;
+  }
+  #griet-bloch-v4 .metric:nth-child(2) { border-top-color: var(--teal); }
+  #griet-bloch-v4 .metric:nth-child(3) { border-top-color: var(--accent); }
+  #griet-bloch-v4 .metric small { display: block; color: var(--muted); font-size: 11px; font-weight: 700; }
+  #griet-bloch-v4 .metric strong { display: block; font-size: 15px; color: var(--violet); margin: 2px 0; font-family: ui-monospace, monospace; }
+  #griet-bloch-v4 .metric:nth-child(2) strong { color: var(--teal); }
+  #griet-bloch-v4 .metric:nth-child(3) strong { color: var(--accent-dark); }
+
+  /* Tabs Section */
+  #griet-bloch-v4 .bottom-wrap { padding: 0 16px 16px; }
+  #griet-bloch-v4 .tabs {
+    display: flex; gap: 6px; flex-wrap: wrap; border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 10px; margin-bottom: 14px;
+  }
+  #griet-bloch-v4 .tab {
+    border: 1px solid #e2e8f0; padding: 7px 13px; border-radius: 7px;
+    background: #f8fafc; color: var(--muted); font-weight: 600; font-size: 13px; cursor: pointer;
+  }
+  #griet-bloch-v4 .tab.active { background: var(--violet); color: #ffffff; border-color: var(--violet); }
+  #griet-bloch-v4 .hidden { display: none; }
+
+  #griet-bloch-v4 .note-section {
+    background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid var(--accent);
+    border-radius: 9px; padding: 14px 18px; margin-bottom: 14px;
+  }
+  #griet-bloch-v4 .note-section h4 {
+    margin: 0 0 6px; font-size: 16px; font-weight: 800; color: var(--accent-dark);
+  }
+  #griet-bloch-v4 .case-box {
+    background: #ffffff; border: 1px solid #dbeafe; border-radius: 8px;
+    padding: 10px 14px; margin: 8px 0;
+  }
+
+  #griet-bloch-v4 table.ref-table {
+    width: 100%; border-collapse: collapse; font-size: 13.5px; margin-top: 8px;
+  }
+  #griet-bloch-v4 table.ref-table th {
+    background: #eff6ff; color: #1e3a8a; text-align: left; padding: 8px 10px; border-bottom: 2px solid #bfdbfe;
+  }
+  #griet-bloch-v4 table.ref-table td {
+    padding: 7px 10px; border-bottom: 1px solid #e2e8f0;
+  }
+
+  #griet-bloch-v4 .ws-table {
+    width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px;
+  }
+  #griet-bloch-v4 .ws-table th, #griet-bloch-v4 .ws-table td {
+    border: 1px solid #cbd5e1; padding: 7px 10px; text-align: center;
+  }
+  #griet-bloch-v4 .ws-table th { background: #f1f5f9; color: #1e3a8a; }
+
+  #griet-bloch-v4 .quiz-card {
+    background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 9px; padding: 12px 14px; margin-bottom: 10px;
+  }
+  #griet-bloch-v4 .quiz-opt {
+    display: block; padding: 6px 10px; margin: 4px 0; border: 1px solid #cbd5e1;
+    border-radius: 6px; background: #ffffff; cursor: pointer; font-size: 13.5px;
+  }
+
+  #griet-bloch-v4 .footer {
+    background: #e2e8f0; padding: 14px 22px; display: flex; justify-content: space-between;
+    align-items: center; flex-wrap: wrap; gap: 10px; color: var(--muted); font-size: 12.5px;
+  }
+  #griet-bloch-v4 .footer strong { color: var(--accent-dark); }
+  #griet-bloch-v4 .inst { color: var(--teal); font-weight: 700; }
+</style>
+</head>
+<body style="margin:0;padding:0;background:#e2e8f0;">
+
+<div id="griet-bloch-v4">
+  <div class="header">
+    <div>
+      <h1>Bloch Sphere &amp; Mixed States Virtual Laboratory</h1>
+      <p> Single-Qubit Geometry, Spherical Coordinates (&theta;, &phi;), Pure vs. Mixed States &amp; Decoherence Animation</p>
+    </div>
+    <div class="author-badge">
+      <span class="author-name">Dr. V. Sesha Sai Kumar</span>
+      <span class="author-inst">GRIET, Hyderabad &middot; Department of Physics</span>
+      <span class="author-date">November 2026</span>
+    </div>
+  </div>
+
+  <div class="main-grid">
+    <!-- Left: Interactive 3D Rotatable Bloch Ball & Mixed-State Ensemble Visualizer -->
+    <div class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px">
+        <h2 style="margin:0">3D Bloch Ball &amp; Mixed-State Simulator</h2>
+        <span style="font-size:12px;font-weight:700;color:#0f766e">Drag sphere to rotate 3D camera</span>
+      </div>
+      <div class="eq-box" id="liveDirac"></div>
+      <canvas id="bloch3d" width="620" height="440"></canvas>
+      <section class="animation-readout" aria-live="polite">
+        <h3>Live Animation: Equations &amp; Numerical Data</h3>
+        <div class="animation-readout-grid">
+          <div class="animation-readout-card">
+            <span class="readout-label">State / density operator</span>
+            <span class="animation-equation" id="animStateEquation">|ψ⟩ = cos(θ/2)|0⟩ + e^(iφ)sin(θ/2)|1⟩</span>
+          </div>
+          <div class="animation-readout-card">
+            <span class="readout-label">Bloch-vector equation</span>
+            <span class="animation-equation" id="animBlochEquation">r⃗ = (2p − 1)(sinθ cosφ, sinθ sinφ, cosθ)</span>
+            <div class="animation-data" id="animBlochData">r⃗ = (1.00, 0.00, 0.00)</div>
+          </div>
+          <div class="animation-readout-card">
+            <span class="readout-label">Density matrix ρ</span>
+            <span class="animation-equation" id="animDensityEquation">ρ = ½(I + rₓX + rᵧY + r_zZ)</span>
+            <div class="animation-data" id="animDensityData">[[0.50, 0.50], [0.50, 0.50]]</div>
+          </div>
+          <div class="animation-readout-card">
+            <span class="readout-label">Measured probabilities &amp; purity</span>
+            <div class="animation-data" id="animProbabilityData">P(0) = 50.0% · P(1) = 50.0%</div>
+            <div class="animation-data" id="animPurityData">Tr(ρ²) = 1.000 · S = 0.000 bits</div>
+          </div>
+        </div>
+        <div class="animation-status">
+          <span id="animStatusText">Ready — adjust θ, φ and p or start an animation.</span>
+          <span id="animProgressText">0%</span>
+        </div>
+        <div class="animation-progress" role="progressbar" aria-label="Animation progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="animProgress">
+          <span id="animProgressBar"></span>
+        </div>
+      </section>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-top:10px">
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="decohere-btn" id="decohereAnimBtn">Animate Decoherence (Pure &rarr; Mixed)</button>
+          <button class="primary" id="precessBtn">Larmor Precession</button>
+          <button class="chip" id="resetViewBtn">Reset View</button>
+        </div>
+        <span id="gateLog" style="font-family:monospace;font-size:12px;font-weight:700;color:#6d28d9">Pure State: |+&rang;</span>
+      </div>
+    </div>
+
+    <!-- Right: Controls, Statistical Ensemble Mixer & Live Density Matrix -->
+    <div class="panel">
+      <h3>1. Spherical Coordinates (&theta;, &phi;)</h3>
+      <div class="control">
+        <label><span>Polar Angle &theta; (0&deg; = |0&rang; North, 180&deg; = |1&rang; South)</span><span class="val-badge" id="thVal">90&deg;</span></label>
+        <input type="range" id="thSlider" min="0" max="180" step="1" value="90">
+      </div>
+      <div class="control">
+        <label><span>Azimuthal Angle &phi; (0&deg; to 360&deg; around Equator)</span><span class="val-badge" id="phVal">0&deg;</span></label>
+        <input type="range" id="phSlider" min="0" max="360" step="1" value="0">
+      </div>
+
+      <h3 style="margin-top:12px">2. Mixed-State Ensemble Mixer: &rho; = p|&psi;&rang;&lang;&psi;| + (1&minus;p)|&psi;<sub>&perp;</sub>&rang;&lang;&psi;<sub>&perp;</sub>|</h3>
+      <div class="control">
+        <label><span>Classical Mixture Probability <em>p</em> (1.0 = Pure |&psi;&rang;, 0.5 = 50/50 Maximally Mixed)</span><span class="val-badge" id="mixProbVal">p = 1.00 (|r| = 1.00)</span></label>
+        <input type="range" id="mixSlider" min="0.5" max="1" step="0.01" value="1">
+      </div>
+
+      <div class="btn-grid">
+        <button class="chip" data-state="0,0,1">Case 1: |0&rang; (0&deg;, 0&deg;)</button>
+        <button class="chip" data-state="180,0,1">Case 2: |1&rang; (180&deg;, 0&deg;)</button>
+        <button class="chip" data-state="90,0,1">Case 3a: |+&rang; (90&deg;, 0&deg;)</button>
+        <button class="chip" data-state="90,180,1">Case 3b: |&minus;&rang; (90&deg;, 180&deg;)</button>
+        <button class="chip" data-state="90,90,1">Case 3c: |+i&rang; (90&deg;, 90&deg;)</button>
+        <button class="chip" data-state="90,270,1">Case 3d: |&minus;i&rang; (90&deg;, 270&deg;)</button>
+        <button class="chip mixed-btn" data-state="0,0,0.75">75/25 Mixed (|r|=0.5)</button>
+        <button class="chip mixed-btn" data-state="90,0,0.5">50/50 Mixed &rho;=I/2 (|r|=0)</button>
+      </div>
+
+      <h3 style="margin-top:12px">3. Apply Unitary Gates (Animated)</h3>
+      <div class="btn-grid">
+        <button class="chip gate-btn" data-gate="X">X</button>
+        <button class="chip gate-btn" data-gate="Y">Y</button>
+        <button class="chip gate-btn" data-gate="Z">Z</button>
+        <button class="chip gate-btn" data-gate="H">H</button>
+        <button class="chip gate-btn" data-gate="S">S</button>
+        <button class="chip gate-btn" data-gate="T">T</button>
+      </div>
+
+      <!-- Live 2x2 Density Matrix Readout -->
+      <div class="rho-card" id="liveRhoCard"></div>
+
+      <div class="metrics" id="metricsBox"></div>
+
+      <div style="background:#f0fdfa;border:1px solid #99f6e4;border-left:4px solid #0f766e;padding:9px 12px;border-radius:8px;font-size:13px;color:#115e59" id="insightBox"></div>
+    </div>
+  </div>
+
+  <!-- Bottom Section: Complete B.Tech Lecture Notes + Worksheet & Quiz -->
+  <div class="bottom-wrap">
+    <div class="panel">
+      <div class="tabs">
+        <button class="tab active" data-tab="notes">B.Tech Lecture Notes (Bloch&rsquo;s Sphere &amp; Mixed States)</button>
+        <button class="tab" data-tab="table">Summary Coordinates &amp; Density Table</button>
+        <button class="tab" data-tab="worksheet">Student Lab Worksheet</button>
+        <button class="tab" data-tab="quiz">B.Tech Exam Quiz</button>
+      </div>
+
+      <!-- TAB 1: B.TECH LECTURE NOTES -->
+      <div id="notesTab">
+        <div class="note-section">
+          <h4>Bloch&rsquo;s Sphere &mdash; Geometrical Representation of a Single Qubit</h4>
+          <p style="margin:4px 0">The <strong>Bloch sphere</strong> is a geometrical representation of the state of a single qubit. It is an imaginary unit sphere (<var>r</var> = 1) used to represent <strong>pure single-qubit states</strong> as points on its surface, while <strong>mixed states</strong> occupy the interior ball (<var>r</var> &lt; 1):</p>
+          <ul style="margin:6px 0;padding-left:20px;font-size:14px">
+            <li><strong>North Pole (<var>&theta;</var> = 0):</strong> Selected to represent the computational basis state <span class="ket">|0&rang;</span> (e.g., spin-up &uarr;).</li>
+            <li><strong>South Pole (<var>&theta;</var> = &pi;):</strong> Selected to represent the computational basis state <span class="ket">|1&rang;</span> (e.g., spin-down &darr;).</li>
+            <li><strong>Surface Points (0 &lt; <var>&theta;</var> &lt; &pi;, 0 &le; <var>&phi;</var> &lt; 2&pi;):</strong> All other points on the unit surface represent pure coherent superposed states in the single-qubit state space.</li>
+            <li><strong>Spherical Coordinates (<var>r, &theta;, &phi;</var>):</strong> The state vector <span class="ket">|&psi;&rang;</span> makes polar angle <var>&theta;</var> with the positive <var>z</var>-axis, and its equatorial projection (azimuth) makes angle <var>&phi;</var> with the positive <var>x</var>-axis.</li>
+          </ul>
+        </div>
+
+        <div class="note-section" style="border-left-color:#6d28d9">
+          <h4 style="color:#5b21b6">Qubit State on the Bloch Sphere</h4>
+          <p style="margin:4px 0">A general normalized pure qubit state is written as <span class="qeq"><span class="ket">|&psi;&rang;</span> <span class="op">=</span> <var>&alpha;</var><span class="ket">|0&rang;</span> <span class="op">+</span> <var>&beta;</var><span class="ket">|1&rang;</span></span> with <span class="qeq">|<var>&alpha;</var>|<sup>2</sup> <span class="op">+</span> |<var>&beta;</var>|<sup>2</sup> <span class="op">=</span> 1</span>. Eliminating unobservable global phase, we parameterize it in spherical angles as:</p>
+          <div class="eq-box">
+            <span class="qeq"><span class="ket">|&psi;&rang;</span> <span class="op">=</span> <span class="fn">cos</span>(<span class="frac"><span><var>&theta;</var></span><span>2</span></span>)<span class="ket">|0&rang;</span> <span class="op">+</span> <var>e</var><sup><var>i&phi;</var></sup><span class="fn">sin</span>(<span class="frac"><span><var>&theta;</var></span><span>2</span></span>)<span class="ket">|1&rang;</span> &nbsp;&nbsp; &mdash; Eq. (1)</span>
+          </div>
+          <ul style="margin:4px 0 8px;padding-left:20px;font-size:13.5px">
+            <li><var>&theta;</var> (theta) &rarr; <strong>Polar angle</strong> (0 &le; <var>&theta;</var> &le; &pi;)</li>
+            <li><var>&phi;</var> (phi) &rarr; <strong>Azimuthal angle</strong> (0 &le; <var>&phi;</var> &lt; 2&pi;)</li>
+          </ul>
+
+          <div class="case-box">
+            <strong>Case (1): Let <var>&theta;</var> = 0 and <var>&phi;</var> = 0</strong>, then Eq. (1) becomes:
+            <div class="eq-box" style="margin:4px 0">
+              <span class="qeq"><span class="ket">|&Psi;&rang;</span> <span class="op">=</span> <span class="fn">cos</span>(0)<span class="ket">|0&rang;</span> <span class="op">+</span> <var>e</var><sup>0</sup><span class="fn">sin</span>(0)<span class="ket">|1&rang;</span> <span class="op">=</span> 1&middot;<span class="ket">|0&rang;</span> <span class="op">+</span> 0&middot;<span class="ket">|1&rang;</span> &nbsp;&rArr;&nbsp; <span class="ket">|&Psi;&rang;</span> <span class="op">=</span> <span class="ket">|0&rang;</span></span>
+            </div>
+          </div>
+
+          <div class="case-box">
+            <strong>Case (2): Let <var>&theta;</var> = &pi; and <var>&phi;</var> = 0</strong>, then Eq. (1) becomes:
+            <div class="eq-box" style="margin:4px 0">
+              <span class="qeq"><span class="ket">|&Psi;&rang;</span> <span class="op">=</span> <span class="fn">cos</span>(<span class="frac"><span>&pi;</span><span>2</span></span>)<span class="ket">|0&rang;</span> <span class="op">+</span> <var>e</var><sup>0</sup><span class="fn">sin</span>(<span class="frac"><span>&pi;</span><span>2</span></span>)<span class="ket">|1&rang;</span> <span class="op">=</span> 0&middot;<span class="ket">|0&rang;</span> <span class="op">+</span> 1&middot;<span class="ket">|1&rang;</span> &nbsp;&rArr;&nbsp; <span class="ket">|&Psi;&rang;</span> <span class="op">=</span> <span class="ket">|1&rang;</span></span>
+            </div>
+          </div>
+
+          <div class="case-box">
+            <strong>Case (3): Let <var>&theta;</var> = &pi;/2 and <var>&phi;</var> = 0</strong>, then Eq. (1) becomes the equal superposition (Hadamard <span class="ket">|+&rang;</span>) state:
+            <div class="eq-box" style="margin:4px 0">
+              <span class="qeq"><span class="ket">|&Psi;&rang;</span> <span class="op">=</span> <span class="fn">cos</span>(<span class="frac"><span>&pi;</span><span>4</span></span>)<span class="ket">|0&rang;</span> <span class="op">+</span> <var>e</var><sup>0</sup><span class="fn">sin</span>(<span class="frac"><span>&pi;</span><span>4</span></span>)<span class="ket">|1&rang;</span> <span class="op">=</span> <span class="frac"><span>1</span><span>&radic;2</span></span>(<span class="ket">|0&rang;</span> <span class="op">+</span> <span class="ket">|1&rang;</span>) <span class="op">=</span> <span class="ket">|+&rang;</span></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="note-section" style="border-left-color:#0f766e">
+          <h4 style="color:#0f766e">Coordinates on the Sphere</h4>
+          <p style="margin:4px 0">Each pure qubit state corresponds to a Cartesian point <span class="qeq">(<var>x, y, z</var>) <span class="op">=</span> (<span class="fn">sin</span> <var>&theta;</var> <span class="fn">cos</span> <var>&phi;</var>, <span class="fn">sin</span> <var>&theta;</var> <span class="fn">sin</span> <var>&phi;</var>, <span class="fn">cos</span> <var>&theta;</var>)</span> on the unit sphere:</p>
+          <ul style="margin:6px 0;padding-left:20px;font-size:13.5px">
+            <li><strong>Case (1): Along the North Pole (<var>&theta;</var> = 0):</strong> <span class="ket">|&psi;&rang;</span> = <span class="ket">|0&rang;</span> (Pure basis state <span class="ket">|0&rang;</span>) &rarr; <strong>Bloch vector: (0, 0, 1)</strong>.</li>
+            <li><strong>Case (2): Along the South Pole (<var>&theta;</var> = &pi;):</strong> <span class="ket">|&psi;&rang;</span> = <span class="ket">|1&rang;</span> (Pure basis state <span class="ket">|1&rang;</span>) &rarr; <strong>Bloch vector: (0, 0, &minus;1)</strong>.</li>
+            <li><strong>Case (3): Along the Equator (<var>&theta;</var> = &pi;/2):</strong> Global phase does not affect physical observables, so all points around the equator represent equal 50/50 superpositions with different relative phases <var>&phi;</var>:
+              <br>&bull; If <strong><var>&phi;</var> = 0</strong> (Hadamard state <span class="ket">|+&rang;</span> = (<span class="ket">|0&rang;</span>+<span class="ket">|1&rang;</span>)/&radic;2) &rarr; <strong>Bloch vector: (1, 0, 0)</strong> &rarr; Along <strong>+x-axis</strong>.
+              <br>&bull; If <strong><var>&phi;</var> = &pi;</strong> (State <span class="ket">|&minus;&rang;</span> = (<span class="ket">|0&rang;</span>&minus;<span class="ket">|1&rang;</span>)/&radic;2) &rarr; <strong>Bloch vector: (&minus;1, 0, 0)</strong> &rarr; Along <strong>&minus;x-axis</strong>.
+              <br>&bull; If <strong><var>&phi;</var> = &pi;/2</strong> (State <span class="ket">|+i&rang;</span> = (<span class="ket">|0&rang;</span>+<var>i</var><span class="ket">|1&rang;</span>)/&radic;2) &rarr; <strong>Bloch vector: (0, 1, 0)</strong> &rarr; Along <strong>+y-axis</strong>.
+              <br>&bull; If <strong><var>&phi;</var> = 3&pi;/2</strong> (State <span class="ket">|&minus;i&rang;</span> = (<span class="ket">|0&rang;</span>&minus;<var>i</var><span class="ket">|1&rang;</span>)/&radic;2) &rarr; <strong>Bloch vector: (0, &minus;1, 0)</strong> &rarr; Along <strong>&minus;y-axis</strong>.
+            </li>
+          </ul>
+        </div>
+
+        <div class="note-section" style="border-left-color:#d97706;background:#fffdf7">
+          <h4 style="color:#b45309">Mixed States &amp; Interior of the Bloch Ball (r &lt; 1)</h4>
+          <p style="margin:4px 0">While <strong>pure states</strong> lie strictly on the outer surface (<var>r</var> = |<var>r&#8407;</var>| = 1), <strong>mixed states</strong> represent classical statistical ensembles <span class="qeq"><var>&rho;</var> <span class="op">=</span> <var>p</var><span class="ket">|&psi;&rang;&lang;&psi;|</span> <span class="op">+</span> (1 <span class="op">&minus;</span> <var>p</var>)<span class="ket">|&psi;<sub>&perp;</sub>&rang;&lang;&psi;<sub>&perp;</sub>|</span></span> caused by environmental decoherence or entanglement with another qubit:</p>
+          <div class="eq-box">
+            <span class="qeq"><var>&rho;</var> <span class="op">=</span> <span class="frac"><span>1</span><span>2</span></span>(<var>I</var> <span class="op">+</span> <var>r<sub>x</sub>X</var> <span class="op">+</span> <var>r<sub>y</sub>Y</var> <span class="op">+</span> <var>r<sub>z</sub>Z</var>)</span>
+            <span class="qeq">|<var>r&#8407;</var>| <span class="op">=</span> |2<var>p</var> <span class="op">&minus;</span> 1| &lt; 1</span>
+            <span class="qeq"><span class="fn">Tr</span>(<var>&rho;</var><sup>2</sup>) <span class="op">=</span> <span class="frac"><span>1</span><span>2</span></span>(1 <span class="op">+</span> |<var>r&#8407;</var>|<sup>2</sup>) &lt; 1</span>
+          </div>
+          <ul style="margin:4px 0;padding-left:20px;font-size:13.5px">
+            <li><strong>Pure Superposition <span class="ket">|+&rang;</span> (<var>p</var> = 1, |<var>r&#8407;</var>| = 1):</strong> Density matrix <span class="qeq"><var>&rho;</var> <span class="op">=</span> [[0.5, 0.5], [0.5, 0.5]]</span> has non-zero off-diagonal <em>quantum coherences</em> (0.5), enabling interference.</li>
+            <li><strong>50/50 Classical Mixture (<var>p</var> = 0.5, |<var>r&#8407;</var>| = 0):</strong> Density matrix <span class="qeq"><var>&rho;</var> <span class="op">=</span> <var>I</var>/2 <span class="op">=</span> [[0.5, 0], [0, 0.5]]</span> sits at the exact center origin of the Bloch ball. All off-diagonal coherences vanish (0.00), so no interference occurs.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- TAB 2: SUMMARY TABLE -->
+      <div id="tableTab" class="hidden">
+        <table class="ref-table">
+          <thead>
+            <tr>
+              <th>Case / State</th>
+              <th>Spherical (&theta;, &phi;)</th>
+              <th>Dirac State / Density &rho;</th>
+              <th>Bloch Vector (x, y, z)</th>
+              <th>Axis &amp; Purity Tr(&rho;&sup2;)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Case 1: |0&rang;</strong></td><td>(0, 0)</td><td>|0&rang; (Pure)</td><td>(0, 0, 1)</td><td>+z-axis (North Pole) &middot; 1.00</td></tr>
+            <tr><td><strong>Case 2: |1&rang;</strong></td><td>(&pi;, 0)</td><td>|1&rang; (Pure)</td><td>(0, 0, &minus;1)</td><td>&minus;z-axis (South Pole) &middot; 1.00</td></tr>
+            <tr><td><strong>Case 3a: |+&rang;</strong></td><td>(&pi;/2, 0)</td><td>(|0&rang;+|1&rang;)/&radic;2</td><td>(1, 0, 0)</td><td>+x-axis (Equator) &middot; 1.00</td></tr>
+            <tr><td><strong>Case 3b: |&minus;&rang;</strong></td><td>(&pi;/2, &pi;)</td><td>(|0&rang;&minus;|1&rang;)/&radic;2</td><td>(&minus;1, 0, 0)</td><td>&minus;x-axis (Equator) &middot; 1.00</td></tr>
+            <tr><td><strong>Case 3c: |+i&rang;</strong></td><td>(&pi;/2, &pi;/2)</td><td>(|0&rang;+i|1&rang;)/&radic;2</td><td>(0, 1, 0)</td><td>+y-axis (Equator) &middot; 1.00</td></tr>
+            <tr><td><strong>Case 3d: |&minus;i&rang;</strong></td><td>(&pi;/2, 3&pi;/2)</td><td>(|0&rang;&minus;i|1&rang;)/&radic;2</td><td>(0, &minus;1, 0)</td><td>&minus;y-axis (Equator) &middot; 1.00</td></tr>
+            <tr><td><strong>Maximally Mixed</strong></td><td>Any (&theta;, &phi;), p=0.5</td><td>&rho; = I/2 (Mixed)</td><td>(0, 0, 0)</td><td>Sphere Origin &middot; 0.50</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- TAB 3: WORKSHEET -->
+      <div id="worksheetTab" class="hidden">
+        <p style="margin-top:0"><strong>B.Tech Lab Exercise:</strong> Use the controls above to verify all cases in the Coordinates on the Sphere section and observe how mixing probability <em>p</em> shrinks the Bloch vector into the interior of the sphere.</p>
+        <table class="ws-table">
+          <thead>
+            <tr>
+              <th>Experiment Step</th>
+              <th>Angles (&theta;, &phi;) &amp; Mix <em>p</em></th>
+              <th>Bloch Vector (x, y, z)</th>
+              <th>Off-Diagonal &rho;<sub>01</sub></th>
+              <th>Purity Tr(&rho;&sup2;)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>1. North Pole |0&rang;</td><td>(0&deg;, 0&deg;), p = 1.00</td><td>(0.00, 0.00, 1.00)</td><td>0.00</td><td>1.000</td></tr>
+            <tr><td>2. Equator |+&rang;</td><td>(90&deg;, 0&deg;), p = 1.00</td><td>(1.00, 0.00, 0.00)</td><td>0.50</td><td>1.000</td></tr>
+            <tr><td>3. Equator |+i&rang;</td><td>(90&deg;, 90&deg;), p = 1.00</td><td>(0.00, 1.00, 0.00)</td><td>&minus;0.50i</td><td>1.000</td></tr>
+            <tr><td>4. 75/25 Mixture</td><td>(90&deg;, 0&deg;), p = 0.75</td><td><em>Record from sim</em></td><td><em>Record</em></td><td><em>Record</em></td></tr>
+            <tr><td>5. Maximally Mixed</td><td>(90&deg;, 0&deg;), p = 0.50</td><td>(0.00, 0.00, 0.00)</td><td>0.00</td><td>0.500</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- TAB 4: QUIZ -->
+      <div id="quizTab" class="hidden">
+        <div id="quizContainer"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div>
+      <strong>Developed by Dr. V. Sesha Sai Kumar</strong> &middot; <span class="inst">Gokaraju Rangaraju Institute of Engineering and Technology (GRIET), Hyderabad</span> &middot; <strong>November 2026</strong>
+    </div>
+    <div>
+      Unit 5: Bloch Sphere &amp; Mixed States Virtual Lab &middot; B.Tech Quantum Computing
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+let rx = 1, ry = 0, rz = 0;
+let mixP = 1.0; // classical mixture probability p in [0.5, 1.0]; Bloch radius |r| = 2p - 1
+let viewYaw = 0.55;
+let viewPitch = 0.32;
+let precessing = false;
+let decohereAnim = null;
+let gateAnim = null;
+let lastTs = 0;
+
+function setupHiDPI(canvas, cssW, cssH) {
+  const dpr = window.devicePixelRatio || 1;
+  if (canvas.width !== cssW * dpr || canvas.height !== cssH * dpr) {
+    canvas.width = cssW * dpr;
+    canvas.height = cssH * dpr;
+  }
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return ctx;
+}
+
+function project3D(x, y, z, cx, cy, R) {
+  const cosY = Math.cos(viewYaw), sinY = Math.sin(viewYaw);
+  const x1 = x * cosY - y * sinY;
+  const y1 = x * sinY + y * cosY;
+  const cosP = Math.cos(viewPitch), sinP = Math.sin(viewPitch);
+  const y2 = y1 * cosP - z * sinP;
+  const z2 = y1 * sinP + z * cosP;
+  return { sx: cx + R * x1, sy: cy - R * z2, depth: y2 };
+}
+
+function drawArrow2D(ctx, x1, y1, x2, y2, color, width = 3, label = '') {
+  const dx = x2 - x1, dy = y2 - y1, len = Math.hypot(dx, dy);
+  if (len < 3) return;
+  const ang = Math.atan2(dy, dx), head = 9;
+  ctx.save();
+  ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = width;
+  ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(x2, y2);
+  ctx.lineTo(x2 - head * Math.cos(ang - Math.PI / 6), y2 - head * Math.sin(ang - Math.PI / 6));
+  ctx.lineTo(x2 - head * Math.cos(ang + Math.PI / 6), y2 - head * Math.sin(ang + Math.PI / 6));
+  ctx.closePath(); ctx.fill();
+  if (label) {
+    ctx.font = 'bold 12px system-ui, sans-serif';
+    ctx.fillText(label, x2 + 8 * Math.cos(ang), y2 + 8 * Math.sin(ang));
+  }
+  ctx.restore();
+}
+
+function drawBlochScene() {
+  const canvas = $('bloch3d');
+  const rect = canvas.getBoundingClientRect();
+  const w = Math.max(320, Math.round(rect.width || 600));
+  const h = 440;
+  const ctx = setupHiDPI(canvas, w, h);
+  ctx.clearRect(0, 0, w, h);
+
+  const cx = w / 2, cy = h / 2 + 4;
+  const R = Math.min(w, h) * 0.37;
+  const rLen = Math.max(0, 2 * mixP - 1); // |r| = 2p - 1
+
+  // Outer pure-state spherical shell
+  const grad = ctx.createRadialGradient(cx - R * 0.32, cy - R * 0.32, R * 0.08, cx, cy, R);
+  grad.addColorStop(0, '#ffffff');
+  grad.addColorStop(0.7, '#eff6ff');
+  grad.addColorStop(1, '#dbeafe');
+  ctx.fillStyle = grad;
+  ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fill();
+  ctx.strokeStyle = '#93c5fd'; ctx.lineWidth = 2; ctx.stroke();
+
+  // Inner mixed-state shell showing radius |r| = 2p - 1
+  if (rLen > 0.03 && rLen < 0.99) {
+    ctx.save();
+    ctx.setLineDash([4, 4]);
+    ctx.strokeStyle = 'rgba(180, 83, 9, 0.55)';
+    ctx.lineWidth = 1.6;
+    ctx.beginPath(); ctx.arc(cx, cy, R * rLen, 0, Math.PI * 2); ctx.stroke();
+    ctx.restore();
+  }
+
+  const drawCircle3D = (fnPt, color, dash = []) => {
+    ctx.save();
+    ctx.setLineDash(dash);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.2;
+    ctx.beginPath();
+    for (let i = 0; i <= 72; i++) {
+      const a = (i / 72) * Math.PI * 2;
+      const [px, py, pz] = fnPt(a);
+      const p = project3D(px, py, pz, cx, cy, R);
+      i === 0 ? ctx.moveTo(p.sx, p.sy) : ctx.lineTo(p.sx, p.sy);
+    }
+    ctx.stroke();
+    ctx.restore();
+  };
+
+  drawCircle3D(a => [Math.cos(a), Math.sin(a), 0], '#64748b', [4, 4]);
+  drawCircle3D(a => [Math.cos(a), 0, Math.sin(a)], '#cbd5e1', [3, 4]);
+  drawCircle3D(a => [0, Math.cos(a), Math.sin(a)], '#cbd5e1', [3, 4]);
+
+  const axes = [
+    { p1: [-1.22, 0, 0], p2: [1.22, 0, 0], lblPos: '|+⟩ (+x)', lblNeg: '|−⟩ (−x)', col: '#0f766e' },
+    { p1: [0, -1.22, 0], p2: [0, 1.22, 0], lblPos: '|+i⟩ (+y)', lblNeg: '|−i⟩ (−y)', col: '#1d4ed8' },
+    { p1: [0, 0, -1.22], p2: [0, 0, 1.22], lblPos: '|0⟩ (+z)', lblNeg: '|1⟩ (−z)', col: '#1e293b' }
+  ];
+
+  axes.forEach(ax => {
+    const a1 = project3D(...ax.p1, cx, cy, R);
+    const a2 = project3D(...ax.p2, cx, cy, R);
+    ctx.strokeStyle = '#94a3b8'; ctx.lineWidth = 1.3;
+    ctx.beginPath(); ctx.moveTo(a1.sx, a1.sy); ctx.lineTo(a2.sx, a2.sy); ctx.stroke();
+
+    ctx.fillStyle = ax.col; ctx.font = 'bold 12px system-ui, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText(ax.lblPos, a2.sx, a2.sy - 6);
+    ctx.fillText(ax.lblNeg, a1.sx, a1.sy + 14);
+  });
+
+  const origin = project3D(0, 0, 0, cx, cy, R);
+
+  // If mixed state (mixP < 1), draw the two opposing pure components p|psi> and (1-p)|psi_perp> lightly!
+  if (mixP < 0.995) {
+    const tipMain = project3D(rx * mixP, ry * mixP, rz * mixP, cx, cy, R);
+    const tipOrth = project3D(-rx * (1 - mixP), -ry * (1 - mixP), -rz * (1 - mixP), cx, cy, R);
+    ctx.save();
+    ctx.setLineDash([3, 3]);
+    drawArrow2D(ctx, origin.sx, origin.sy, tipMain.sx, tipMain.sy, 'rgba(37, 99, 235, 0.55)', 2, `p=${mixP.toFixed(2)}`);
+    drawArrow2D(ctx, origin.sx, origin.sy, tipOrth.sx, tipOrth.sy, 'rgba(225, 29, 72, 0.55)', 2, `1−p=${(1-mixP).toFixed(2)}`);
+    ctx.restore();
+  }
+
+  // Resultant Bloch Vector r = (2p - 1) * n_hat
+  const vx = rx * rLen, vy = ry * rLen, vz = rz * rLen;
+  const tip = project3D(vx, vy, vz, cx, cy, R);
+  const eqProj = project3D(vx, vy, 0, cx, cy, R);
+
+  if (rLen > 0.03) {
+    ctx.save();
+    ctx.setLineDash([3, 3]);
+    ctx.strokeStyle = '#a78bfa';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(origin.sx, origin.sy);
+    ctx.lineTo(eqProj.sx, eqProj.sy);
+    ctx.lineTo(tip.sx, tip.sy);
+    ctx.stroke();
+    ctx.restore();
+
+    const vecColor = rLen < 0.99 ? '#b45309' : '#6d28d9';
+    drawArrow2D(ctx, origin.sx, origin.sy, tip.sx, tip.sy, vecColor, 3.8, rLen < 0.99 ? `ρ (|r|=${rLen.toFixed(2)})` : '|ψ⟩ (|r|=1)');
+    ctx.fillStyle = vecColor;
+    ctx.beginPath(); ctx.arc(tip.sx, tip.sy, 6, 0, Math.PI * 2); ctx.fill();
+  } else {
+    ctx.fillStyle = '#be123c';
+    ctx.beginPath(); ctx.arc(origin.sx, origin.sy, 8.5, 0, Math.PI * 2); ctx.fill();
+    ctx.font = 'bold 12.5px system-ui, sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('ρ = I/2 (Origin: |r| = 0, Maximally Mixed)', origin.sx, origin.sy - 15);
+  }
+}
+
+function syncUI(fromSliders = false) {
+  if (fromSliders) {
+    const th = Number($('thSlider').value) * Math.PI / 180;
+    const ph = Number($('phSlider').value) * Math.PI / 180;
+    mixP = Number($('mixSlider').value);
+    rx = Math.sin(th) * Math.cos(ph);
+    ry = Math.sin(th) * Math.sin(ph);
+    rz = Math.cos(th);
+  }
+
+  const thDeg = Math.round(Math.acos(Math.max(-1, Math.min(1, rz))) * 180 / Math.PI);
+  let phDeg = Math.round(Math.atan2(ry, rx) * 180 / Math.PI);
+  if (phDeg < 0) phDeg += 360;
+  if (thDeg === 0 || thDeg === 180) phDeg = Number($('phSlider').value);
+
+  const rLen = Math.max(0, 2 * mixP - 1);
+
+  $('thSlider').value = thDeg;
+  $('phSlider').value = phDeg;
+  $('mixSlider').value = mixP;
+  $('thVal').textContent = thDeg + '°';
+  $('phVal').textContent = phDeg + '°';
+  $('mixProbVal').textContent = `p = ${mixP.toFixed(2)} (|r| = ${rLen.toFixed(2)})`;
+
+  const bx = rx * rLen, by = ry * rLen, bz = rz * rLen;
+  const p0 = 0.5 * (1 + bz);
+  const p1 = 0.5 * (1 - bz);
+  const trRho2 = 0.5 * (1 + rLen * rLen);
+
+  const lp = mixP;
+  const lm = 1 - mixP;
+  const entropy = (lp > 1e-9 ? -lp * Math.log2(lp) : 0) + (lm > 1e-9 ? -lm * Math.log2(lm) : 0);
+
+  const r00 = p0.toFixed(2);
+  const r11 = p1.toFixed(2);
+  const cohRe = (0.5 * bx).toFixed(2);
+  const cohIm = (0.5 * Math.abs(by)).toFixed(2);
+  const rho01 = Math.abs(by) < 0.005 ? `${cohRe}` : `${cohRe}${by > 0 ? '−' : '+'}${cohIm}i`;
+  const rho10 = Math.abs(by) < 0.005 ? `${cohRe}` : `${cohRe}${by > 0 ? '+' : '−'}${cohIm}i`;
+
+  $('liveRhoCard').innerHTML = `
+    <div>
+      <strong style="font-size:12.5px;color:#1e3a8a;display:block">Live Density Matrix &rho; = p|&psi;&rang;&lang;&psi;| + (1&minus;p)|&psi;<sub>&perp;</sub>&rang;&lang;&psi;<sub>&perp;</sub>|</strong>
+      <span style="font-size:11.5px;color:#475569">Off-diagonal terms (&rho;<sub>01</sub>, &rho;<sub>10</sub>) vanish as p &rarr; 0.50</span>
+    </div>
+    <span class="qeq" style="font-size:15.5px"><var>&rho;</var> <span class="op">=</span> <span class="qmat"><span>${r00} &nbsp;&nbsp; ${rho01}</span><span>${rho10} &nbsp;&nbsp; ${r11}</span></span></span>
+  `;
+
+  // Keep the equations and numerical data directly synchronized with every animation frame.
+  const thetaRad = Math.acos(Math.max(-1, Math.min(1, rz)));
+  const phiRad = Math.atan2(ry, rx);
+  const thetaNow = (thetaRad * 180 / Math.PI).toFixed(1);
+  const phiNow = ((phiRad * 180 / Math.PI + 360) % 360).toFixed(1);
+  const stateA = Math.cos(thetaRad / 2);
+  const stateB = Math.sin(thetaRad / 2);
+  const statePhase = phiNow;
+  const densityText = `[[${r00}, ${rho01}], [${rho10}, ${r11}]]`;
+  $('animStateEquation').textContent = rLen >= 0.99
+    ? `|ψ⟩ = ${stateA.toFixed(3)}|0⟩ + e^(i${statePhase}°) ${stateB.toFixed(3)}|1⟩`
+    : `ρ = ${mixP.toFixed(2)}|ψ⟩⟨ψ| + ${(1-mixP).toFixed(2)}|ψ⊥⟩⟨ψ⊥|`;
+  $('animBlochEquation').textContent = `r⃗ = (2p − 1)(sinθ cosφ, sinθ sinφ, cosθ);  θ=${thetaNow}°, φ=${phiNow}°, p=${mixP.toFixed(2)}`;
+  $('animBlochData').textContent = `r⃗ = (${bx.toFixed(3)}, ${by.toFixed(3)}, ${bz.toFixed(3)})  |r⃗| = ${rLen.toFixed(3)}`;
+  $('animDensityData').textContent = densityText;
+  $('animProbabilityData').textContent = `P(0) = ${(p0*100).toFixed(1)}%  ·  P(1) = ${(p1*100).toFixed(1)}%`;
+  $('animPurityData').textContent = `Tr(ρ²) = ${trRho2.toFixed(3)}  ·  S = ${entropy.toFixed(3)} bits`;
+
+  $('metricsBox').innerHTML = `
+    <div class="metric"><small>Bloch Vector (x, y, z)</small><strong>(${bx.toFixed(2)}, ${by.toFixed(2)}, ${bz.toFixed(2)})</strong></div>
+    <div class="metric"><small>Z-Basis Probabilities</small><strong>P(0)=${(p0*100).toFixed(1)}% | P(1)=${(p1*100).toFixed(1)}%</strong></div>
+    <div class="metric"><small>Purity &amp; Entropy</small><strong>Tr(ρ²)=${trRho2.toFixed(3)} | S=${entropy.toFixed(2)}b</strong></div>
+  `;
+
+  const a = Math.cos((thDeg * Math.PI / 180) / 2);
+  const b = Math.sin((thDeg * Math.PI / 180) / 2);
+  if (rLen >= 0.99) {
+    $('liveDirac').innerHTML = `
+      <span class="qeq"><span class="ket">|&psi;&rang;</span> <span class="op">=</span> ${a.toFixed(3)}<span class="ket">|0&rang;</span> <span class="op">+</span> <var>e</var><sup><var>i</var>(${phDeg}&deg;)</sup>(${b.toFixed(3)})<span class="ket">|1&rang;</span></span>
+      <span class="qeq">|<var>r</var>| <span class="op">=</span> 1.00 (Pure Surface State)</span>
+    `;
+  } else {
+    $('liveDirac').innerHTML = `
+      <span class="qeq"><var>&rho;</var> <span class="op">=</span> ${lp.toFixed(2)}<span class="ket">|&psi;&rang;&lang;&psi;|</span> <span class="op">+</span> ${lm.toFixed(2)}<span class="ket">|&psi;<sub>&perp;</sub>&rang;&lang;&psi;<sub>&perp;</sub>|</span></span>
+      <span class="qeq">|<var>r</var>| <span class="op">=</span> ${rLen.toFixed(2)} &lt; 1 (Mixed Interior State)</span>
+    `;
+  }
+
+  $('insightBox').textContent = rLen < 0.99
+    ? `Mixed Ensemble (p = ${mixP.toFixed(2)}, |r| = ${rLen.toFixed(2)}): Blue dashed arrow shows weight p|ψ⟩ and red dashed arrow shows opposing weight (1−p)|ψ⊥⟩. Their vector sum shrinks inside the sphere!`
+    : `Pure State on Unit Surface (p = 1.00, |r| = 1.00): θ = ${thDeg}° sets P(|0⟩)/P(|1⟩), and φ = ${phDeg}° rotates around the equator.`;
+
+  drawBlochScene();
+}
+
+
+function setAnimationReadout(status, progress) {
+  const pct = Math.max(0, Math.min(100, Number(progress) || 0));
+  const bar = $('animProgressBar');
+  const text = $('animProgressText');
+  const statusEl = $('animStatusText');
+  const progressEl = $('animProgress');
+  if (statusEl) statusEl.textContent = status;
+  if (bar) bar.style.width = pct + '%';
+  if (text) text.textContent = Math.round(pct) + '%';
+  if (progressEl) progressEl.setAttribute('aria-valuenow', String(Math.round(pct)));
+}
+
+function animateGateRotation(ax, ay, az, totalAngle, label) {
+  if (gateAnim) cancelAnimationFrame(gateAnim);
+  if (decohereAnim) cancelAnimationFrame(decohereAnim);
+  precessing = false;
+  $('precessBtn').textContent = 'Larmor Precession';
+  $('gateLog').textContent = `Applied: ${label}`;
+
+  const len = Math.hypot(ax, ay, az);
+  const ux = ax / len, uy = ay / len, uz = az / len;
+  const x0 = rx, y0 = ry, z0 = rz;
+  const dur = 420;
+  const t0 = performance.now();
+
+  function step(now) {
+    const f = Math.min(1, (now - t0) / dur);
+    const ease = f < 0.5 ? 2 * f * f : 1 - Math.pow(-2 * f + 2, 2) / 2;
+    const ang = totalAngle * ease;
+    const c = Math.cos(ang), s = Math.sin(ang), oc = 1 - c;
+
+    rx = (c + ux*ux*oc)*x0 + (ux*uy*oc - uz*s)*y0 + (ux*uz*oc + uy*s)*z0;
+    ry = (uy*ux*oc + uz*s)*x0 + (c + uy*uy*oc)*y0 + (uy*uz*oc - ux*s)*z0;
+    rz = (uz*ux*oc - uy*s)*x0 + (uz*uy*oc + ux*s)*y0 + (c + uz*uz*oc)*z0;
+
+    syncUI(false);
+    setAnimationReadout(`${label} rotation: Bloch vector is rotating while |r⃗| remains ${Math.max(0, 2*mixP-1).toFixed(2)}.`, f * 100);
+    if (f < 1) gateAnim = requestAnimationFrame(step);
+    else setAnimationReadout(`${label} complete. Final state and density data are shown above.`, 100);
+  }
+  setAnimationReadout(`${label} animation started.`, 0);
+  gateAnim = requestAnimationFrame(step);
+}
+
+// Smoothly animate decoherence from pure state (p = 1.0) to maximally mixed state (p = 0.5)
+$('decohereAnimBtn').onclick = () => {
+  if (decohereAnim) cancelAnimationFrame(decohereAnim);
+  precessing = false;
+  $('precessBtn').textContent = 'Larmor Precession';
+  $('gateLog').textContent = 'Animating Decoherence (p: 1.0 → 0.5)...';
+  const t0 = performance.now();
+  const dur = 2200;
+
+  function step(now) {
+    const f = Math.min(1, (now - t0) / dur);
+    mixP = 1.0 - 0.5 * f;
+    syncUI(false);
+    setAnimationReadout(`Decoherence: p = ${mixP.toFixed(3)}; |r⃗| = ${(2*mixP-1).toFixed(3)}. Coherences decrease as the state approaches I/2.`, f * 100);
+    if (f < 1) {
+      decohereAnim = requestAnimationFrame(step);
+    } else {
+      $('gateLog').textContent = 'Decohered to Maximally Mixed ρ = I/2';
+      setAnimationReadout('Decoherence complete: ρ = I/2, |r⃗| = 0, Tr(ρ²) = 0.5, S = 1 bit.', 100);
+    }
+  }
+  decohereAnim = requestAnimationFrame(step);
+};
+
+document.querySelectorAll('#griet-bloch-v4 .gate-btn').forEach(btn => {
+  btn.onclick = () => {
+    const g = btn.dataset.gate;
+    if (g === 'X') animateGateRotation(1, 0, 0, Math.PI, 'Pauli-X');
+    else if (g === 'Y') animateGateRotation(0, 1, 0, Math.PI, 'Pauli-Y');
+    else if (g === 'Z') animateGateRotation(0, 0, 1, Math.PI, 'Pauli-Z');
+    else if (g === 'H') animateGateRotation(1, 0, 1, Math.PI, 'Hadamard H');
+    else if (g === 'S') animateGateRotation(0, 0, 1, Math.PI / 2, 'Phase S');
+    else if (g === 'T') animateGateRotation(0, 0, 1, Math.PI / 4, 'Phase T');
+  };
+});
+
+document.querySelectorAll('#griet-bloch-v4 button.chip[data-state]').forEach(btn => {
+  btn.onclick = () => {
+    const [th, ph, pVal] = btn.dataset.state.split(',').map(Number);
+    $('thSlider').value = th;
+    $('phSlider').value = ph;
+    $('mixSlider').value = pVal !== undefined ? pVal : 1;
+    $('gateLog').textContent = `Loaded: ${btn.textContent}`;
+    syncUI(true);
+    setAnimationReadout(`Preset loaded: ${btn.textContent}. Live equations and data updated.`, 100);
+  };
+});
+
+['thSlider', 'phSlider', 'mixSlider'].forEach(id => {
+  $(id).oninput = () => syncUI(true);
+});
+
+let dragging = false, dragX = 0, dragY = 0;
+$('bloch3d').addEventListener('pointerdown', e => {
+  dragging = true; dragX = e.clientX; dragY = e.clientY;
+  $('bloch3d').setPointerCapture?.(e.pointerId);
+});
+$('bloch3d').addEventListener('pointermove', e => {
+  if (!dragging) return;
+  viewYaw += (e.clientX - dragX) * 0.008;
+  viewPitch = Math.max(-1.2, Math.min(1.2, viewPitch + (e.clientY - dragY) * 0.008));
+  dragX = e.clientX; dragY = e.clientY;
+  drawBlochScene();
+});
+$('bloch3d').addEventListener('pointerup', () => dragging = false);
+$('bloch3d').addEventListener('pointercancel', () => dragging = false);
+
+$('resetViewBtn').onclick = () => { viewYaw = 0.55; viewPitch = 0.32; drawBlochScene(); };
+
+function mainLoop(ts) {
+  if (precessing) {
+    const dt = (ts - lastTs) / 1000;
+    const dAng = dt * 1.6;
+    const nx = rx * Math.cos(dAng) - ry * Math.sin(dAng);
+    const ny = rx * Math.sin(dAng) + ry * Math.cos(dAng);
+    rx = nx; ry = ny;
+    syncUI(false);
+    setAnimationReadout(`Larmor precession active: φ changes with time; θ and |r⃗| remain constant.`, 100);
+  }
+  lastTs = ts;
+  requestAnimationFrame(mainLoop);
+}
+
+$('precessBtn').onclick = () => {
+  precessing = !precessing;
+  $('precessBtn').textContent = precessing ? 'Pause Precession' : 'Larmor Precession';
+  setAnimationReadout(precessing
+    ? 'Larmor precession active: φ changes with time while θ and |r⃗| remain constant.'
+    : 'Larmor precession paused. The current equations and numerical data are retained.', 100);
+};
+
+document.querySelectorAll('#griet-bloch-v4 .tab').forEach(tab => {
+  tab.onclick = () => {
+    document.querySelectorAll('#griet-bloch-v4 .tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    ['notes', 'table', 'worksheet', 'quiz'].forEach(k => $(k + 'Tab').classList.toggle('hidden', k !== tab.dataset.tab));
+  };
+});
+
+const quizData = [
+  { q: '1. On the Bloch sphere, which spherical coordinates (θ, φ) represent the state |−⟩ = (|0⟩ − |1⟩)/√2 along the −x axis?', opts: ['θ = π/2, φ = π', 'θ = 0, φ = 0', 'θ = π/2, φ = π/2', 'θ = π, φ = 0'], ans: 0, exp: 'Along the equator θ = π/2, and φ = π gives e^(iπ) = −1, placing the Bloch vector at (−1, 0, 0).' },
+  { q: '2. What is the Bloch vector length |r| for a mixed state ρ = 0.75|0⟩⟨0| + 0.25|1⟩⟨1|?', opts: ['|r| = |2(0.75) − 1| = 0.50 (inside the sphere)', '|r| = 1.00 (on the surface)', '|r| = 0.00 (at the origin)', '|r| = 0.75'], ans: 0, exp: 'Opposing state weights p = 0.75 and 1−p = 0.25 subtract vectorially: 0.75 − 0.25 = 0.50.' },
+  { q: '3. Which Bloch vector corresponds to φ = 3π/2 on the equator (θ = π/2)?', opts: ['(0, −1, 0) along the −y axis', '(0, 1, 0) along the +y axis', '(1, 0, 0) along the +x axis', '(0, 0, −1) at the South Pole'], ans: 0, exp: 'sin(π/2)cos(3π/2) = 0, sin(π/2)sin(3π/2) = −1, cos(π/2) = 0 → (0, −1, 0).' }
+];
+$('quizContainer').innerHTML = quizData.map((item, idx) => `
+  <div class="quiz-card">
+    <div style="font-weight:700;margin-bottom:6px">${item.q}</div>
+    ${item.opts.map((o, oi) => `<label class="quiz-opt"><input type="radio" name="blq4_${idx}" value="${oi}"> ${o}</label>`).join('')}
+    <div id="blq4_fb_${idx}" style="margin-top:6px;font-size:13px;font-weight:600"></div>
+  </div>`).join('');
+quizData.forEach((item, idx) => {
+  document.querySelectorAll(`input[name="blq4_${idx}"]`).forEach(r => {
+    r.onchange = () => {
+      const fb = $(`blq4_fb_${idx}`);
+      const ok = Number(r.value) === item.ans;
+      fb.style.color = ok ? '#0f766e' : '#be123c';
+      fb.textContent = (ok ? '✓ Correct! ' : '✗ Incorrect. ') + item.exp;
+    };
+  });
+});
+
+window.addEventListener('resize', () => {
+  requestAnimationFrame(() => {
+    drawBlochScene();
+  });
+});
+if (window.ResizeObserver) {
+  const labResizeObserver = new ResizeObserver(() => requestAnimationFrame(drawBlochScene));
+  labResizeObserver.observe($('griet-bloch-v4'));
+}
+syncUI(true);
+setAnimationReadout('Ready — equations and numerical data update continuously with the controls and animations.', 0);
+requestAnimationFrame(mainLoop);
+</script>
+</body>
+</html>
